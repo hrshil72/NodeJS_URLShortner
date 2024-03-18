@@ -1,27 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const ShortUrl = require("../models/links");
+const { createLink, findLink, redirectLink } = require("../controllers/index");
 
-router.get("/", async (req, res) => {
-  const shortUrls = await ShortUrl.find();
-  res.render("index", { shortUrls });
-});
+router.get("/", findLink);
 
-router.post("/shortUrls", async (req, res) => {
-  await ShortUrl.create({ longURL: req.body.longURL });
+router.post("/shortUrls", createLink);
 
-  res.redirect("/");
-});
-
-router.get("/:shorturl", async (req, res) => {
-  let { shorturl } = req.params;
-
-  let shortLink = await ShortUrl.findOne({ shortURL: shorturl });
-
-  shortLink.clicks++;
-  shortLink.save();
-
-  res.redirect(shortLink.longURL);
-});
+router.get("/:shorturl", redirectLink);
 
 module.exports = router;
